@@ -18,13 +18,13 @@
 # doesn't need to pay -- the Makefile needs nothing but clang++.
 
 UNFLAB_NAME=btop
-UNFLAB_VERSION=1.4.7
+UNFLAB_VERSION=1.4.8
 UNFLAB_VERSION_FLAG=--version
 UNFLAB_HOMEPAGE=https://github.com/aristocratos/btop
 UNFLAB_LICENSE=Apache-2.0
-UNFLAB_SOURCE=https://github.com/aristocratos/btop/archive/refs/tags/v1.4.7.tar.gz
+UNFLAB_SOURCE=https://github.com/aristocratos/btop/archive/refs/tags/v1.4.8.tar.gz
 UNFLAB_CHECK=github:aristocratos/btop
-UNFLAB_SHA256=933de2e4d1b2211a638be463eb6e8616891bfba73aef5d38060bd8319baeefc6
+UNFLAB_SHA256=67e07c21b770a6d884c5e50ba1d2cfc90732ea57459367d8732ec7ecbeb3be5f
 UNFLAB_ATTEST='none:GitHub auto-generated tag archive; upstream publishes no checksum for it'
 UNFLAB_TOOLCHAIN="c++ make pandoc"
 UNFLAB_CLASS=3
