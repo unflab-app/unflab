@@ -35,12 +35,13 @@ runs:
         echo "autotools=$(need autotools)" >> "$GITHUB_OUTPUT"
         echo "pandoc=$(need pandoc)" >> "$GITHUB_OUTPUT"
 
-    # check-latest: the runner image's cached Go drifts behind what a
-    # recipe's go.mod needs.
+    # stable rather than a pinned minor: a recipe's go.mod states a
+    # minimum, and upstreams raise it independently of us. check-latest
+    # stops the runner image's cached Go standing in for the newest.
     - if: steps.toolchains.outputs.go == 'true'
       uses: actions/setup-go@v7
       with:
-        go-version: "1.26"
+        go-version: stable
         check-latest: true
         cache: false
 
