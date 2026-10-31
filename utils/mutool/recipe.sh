@@ -26,13 +26,13 @@
 # See unflab_build for what that trade actually costs.
 
 UNFLAB_NAME=mutool
-UNFLAB_VERSION=1.28.5
+UNFLAB_VERSION=1.28.6
 UNFLAB_VERSION_FLAG=--version
 UNFLAB_HOMEPAGE=https://mupdf.com/
 UNFLAB_LICENSE=AGPL-3.0-or-later
-UNFLAB_SOURCE=https://mupdf.com/downloads/archive/mupdf-1.28.5-source.tar.gz
+UNFLAB_SOURCE=https://mupdf.com/downloads/archive/mupdf-1.28.6-source.tar.gz
 UNFLAB_CHECK=html:https://mupdf.com/releases/:mupdf
-UNFLAB_SHA256=98a5c10cda20c3992cdf76ff6b2a1149c32bd79cc796d3f703230b1185b7e934
+UNFLAB_SHA256=dc85000640a45d90ca9b77b061f6ca67cce0c4d4fbecf8819647baf573eef101
 UNFLAB_ATTEST='none:upstream download page publishes no checksum or signature'
 UNFLAB_TOOLCHAIN="c c++ make"
 UNFLAB_CLASS=1
