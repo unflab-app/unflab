@@ -22,13 +22,13 @@
 # offers the choice and dropping one would misrepresent the terms.
 
 UNFLAB_NAME=fd
-UNFLAB_VERSION=10.5.0
+UNFLAB_VERSION=10.5.1
 UNFLAB_VERSION_FLAG=--version
 UNFLAB_HOMEPAGE=https://github.com/sharkdp/fd
 UNFLAB_LICENSE="MIT OR Apache-2.0"
-UNFLAB_SOURCE=https://github.com/sharkdp/fd/archive/refs/tags/v10.5.0.tar.gz
+UNFLAB_SOURCE=https://github.com/sharkdp/fd/archive/refs/tags/v10.5.1.tar.gz
 UNFLAB_CHECK=github:sharkdp/fd
-UNFLAB_SHA256=e6d9e90730bf316101691e49d59cc02565278dc3779d33a77423801569484851
+UNFLAB_SHA256=3ea70c258d3390a601b436b6f4c545e3a944ff3de44c8ee5542c05588e337032
 UNFLAB_ATTEST='none:GitHub auto-generated tag archive; upstream publishes prebuilt binaries but no checksum for the source'
 UNFLAB_TOOLCHAIN="rust cargo"
 UNFLAB_CLASS=3
