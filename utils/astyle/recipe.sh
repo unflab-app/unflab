@@ -27,13 +27,13 @@
 # It links only libc++ and libSystem, both in /usr/lib.
 
 UNFLAB_NAME=astyle
-UNFLAB_VERSION=3.6.20
+UNFLAB_VERSION=3.6.23
 UNFLAB_VERSION_FLAG=--version
 UNFLAB_HOMEPAGE=https://astyle.sourceforge.net/
 UNFLAB_LICENSE=MIT
-UNFLAB_SOURCE=https://downloads.sourceforge.net/project/astyle/astyle/astyle%203.6/astyle-3.6.20.tar.bz2
+UNFLAB_SOURCE=https://downloads.sourceforge.net/project/astyle/astyle/astyle%203.6/astyle-3.6.23.tar.bz2
 UNFLAB_CHECK=html:https://sourceforge.net/projects/astyle/rss?path=/astyle:astyle
-UNFLAB_SHA256=b058f3e176334dba65477fd126105d3df4eab9e954eab1c76b568cd5370cfbe9
+UNFLAB_SHA256=9c29649223429d0a8a9fd775767f9d268e2624ccc39aaba7571493c5787c00af
 # SourceForge's RSS feed carries an MD5 per file, which is neither a
 # signature nor a strong hash, and comes from the same host that served
 # the tarball -- so it attests to nothing this recipe's own SHA-256

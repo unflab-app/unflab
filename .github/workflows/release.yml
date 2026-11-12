@@ -112,27 +112,27 @@ jobs:
             exit 1
           fi
 
-          # A recipe new since $prev has no recipe.sh there. `|| true`
-          # makes that an empty version rather than, under pipefail, an
-          # exit 128 that set -e turns into a silent failure.
-          ver() { { git show "$1:utils/$2/recipe.sh" 2>/dev/null || true; } |
-                    sed -n 's/^UNFLAB_VERSION=//p' | head -1; }
-          body=""
-          names=""
-          for r in $recipes; do
-            old=$(ver "$prev" "$r"); new=$(ver HEAD "$r")
-            if [ -z "$old" ]; then line="$r $new (new)"
-            elif [ "$old" != "$new" ]; then line="$r $old -> $new"
-            else line="$r $new (rebuilt)"
-            fi
-            body="$body- $line"$'\n'
-            names="$names, $r"
-          done
-          names=${names#, }
-          [ "$(echo "$recipes" | wc -w)" -gt 8 ] && names="$(echo "$recipes" | wc -w | tr -d ' ') recipes"
-
-          msg="$next -- ${SUMMARY:-$names}"$'\n\n'"$body"
-          echo "$msg"
+          # # A recipe new since $prev has no recipe.sh there. `|| true`
+          # # makes that an empty version rather than, under pipefail, an
+          # # exit 128 that set -e turns into a silent failure.
+          # ver() { { git show "$1:utils/$2/recipe.sh" 2>/dev/null || true; } |
+          #           sed -n 's/^UNFLAB_VERSION=//p' | head -1; }
+          # body=""
+          # names=""
+          # for r in $recipes; do
+          #   old=$(ver "$prev" "$r"); new=$(ver HEAD "$r")
+          #   if [ -z "$old" ]; then line="$r $new (new)"
+          #   elif [ "$old" != "$new" ]; then line="$r $old -> $new"
+          #   else line="$r $new (rebuilt)"
+          #   fi
+          #   body="$body- $line"$'\n'
+          #   names="$names, $r"
+          # done
+          # names=${names#, }
+          # [ "$(echo "$recipes" | wc -w)" -gt 8 ] && names="$(echo "$recipes" | wc -w | tr -d ' ') recipes"
+          #
+          # msg="$next -- ${SUMMARY:-$names}"$'\n\n'"$body"
+          # echo "$msg"
 
           if [ "$DRY_RUN" = true ]; then
             echo "dry run: not tagging"
@@ -141,7 +141,11 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          printf '%s' "$msg" | git tag -a "$next" -F -
+
+          # printf '%s' "$msg" | git tag -a "$next" -F -
+          printf '**Full Changelog:** https://github.com/unflab-app/unflab/compare/$prev...$next' \
+            | git tag -a "$next" -F -
+
           git push origin "$next"
           echo "tag=$next" >> "$GITHUB_OUTPUT"
 
@@ -356,7 +360,7 @@ jobs:
             dist/SHA256SUMS-*.txt
             dist/index.txt
             dist/BUILD-KEYS.txt
-          generate_release_notes: true
+          generate_release_notes: false
 
       # The site takes index.txt and the per-package versions from the
       # latest release, so it has to redeploy once that release exists.

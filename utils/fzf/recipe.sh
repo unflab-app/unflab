@@ -23,13 +23,13 @@
 # (.nu) integration, for a shell nothing else here supports.
 
 UNFLAB_NAME=fzf
-UNFLAB_VERSION=0.74.5
+UNFLAB_VERSION=0.75.0
 UNFLAB_VERSION_FLAG="--version fzf-preview.sh=-"
 UNFLAB_HOMEPAGE=https://junegunn.github.io/fzf/
 UNFLAB_LICENSE=MIT
-UNFLAB_SOURCE=https://github.com/junegunn/fzf/archive/refs/tags/v0.74.5.tar.gz
+UNFLAB_SOURCE=https://github.com/junegunn/fzf/archive/refs/tags/v0.75.0.tar.gz
 UNFLAB_CHECK=github:junegunn/fzf
-UNFLAB_SHA256=5529d08897b85ae773695787c811ff9c9eeee32419c8a297fa1dbe586ed0a27e
+UNFLAB_SHA256=165f6e0c1b9ba082346233681e3f1d1374e37f9fd3c1d7b6dfe09659ab893faa
 UNFLAB_ATTEST='none:GitHub auto-generated tag archive; upstream publishes no checksum for it'
 UNFLAB_TOOLCHAIN="go"
 UNFLAB_CLASS=3

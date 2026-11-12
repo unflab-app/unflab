@@ -5,13 +5,20 @@ package manager, and nothing installed that the tool doesn't actually
 need.
 
 ```sh
-curl -fsSL https://unflab.app/get | sh -s -- tree
+curl -sL unflab.app/get | sh -s -- tree
 ```
 
 That installs `tree` into `~/.local/bin`. Several at once works too:
 
 ```sh
-curl -fsSL https://unflab.app/get | sh -s -- wget jq tree
+curl -sL unflab.app/get | sh -s -- wget jq tree
+```
+
+Once you've installed one, it'll install a simple wrapper to reduce
+that to:
+
+```sh
+unflab tree
 ```
 
 No Homebrew. No Xcode. No runtime dependencies. All packages need to
@@ -25,10 +32,10 @@ experience:
 - `brew install poppler`, to extract text from a PDF, brings **cairo,
   glib, nss, nspr, gpgme, fontconfig, freetype, libtiff, openjpeg,
   little-cms2** and 13 binaries.
-- `brew install gnuplot` brings **the entire Qt stack** — qtbase,
-  qt5compat, qtsvg — plus cairo, pango, glib, lua and harfbuzz.
+- `brew install gnuplot` brings **the entire Qt stack** - **qtbase,
+  qt5compat, qtsvg** - plus **cairo, pango, glib, lua** and **harfbuzz.**
 - `brew install bloaty`, a tool for measuring binary size, brings
-  **abseil, protobuf, capstone and re2** and requires the whole **cmake**
+  **abseil, protobuf, capstone** and **re2** and requires the whole **cmake**
   build toolchain.
 - `brew install inetutils`, because macOS removed `ftp` and `telnet`,
   installs about 23 executables.
@@ -50,17 +57,17 @@ you picked wrong.  _webi_ is _great_.
 
 The differences are real, though, and they're mostly about scope:
 
-- **webi downloads, _unflab_ compiles.** With one exception: ffmpeg is
-  Martin Riedl's signed static build, which the installer downloads and
-  accepts only if it matches a pinned checksum and his Developer ID
+- **_webi_ downloads, _unflab_ compiles.**  One exception: **ffmpeg**
+  is Martin Riedl's signed static build, which the installer downloads
+  and accepts only if it matches a pinned checksum and his Developer ID
   signature, and which goes through the same gate in CI.
 
-- **webi is multi-platform, _unflab_ is macOS-only.**
+- **_webi_ is multi-platform, _unflab_ is macOS-only.**
 
-- **Different rosters.** webi leans towards web-dev tooling; unflab
+- **Different rosters.** _webi_ leans towards web-dev tooling; _unflab_
   leans towards Unix plumbing.
 
-- **unflab checks what it ships.** _unflab_ puts every binary through the
+- **_unflab_ checks what it ships.** _unflab_ puts every binary through the
   `otool -L` gate in CI, whereas _webi_ uses the official binaries.
 
 The upshot is that _unflab_ can provide a specific utility from a larger
