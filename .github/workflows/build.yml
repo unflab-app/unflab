@@ -143,8 +143,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/verify
-          for a in dist/*.tar.gz; do
-            d=/tmp/verify/$(basename "$a" .tar.gz)
+          for a in dist/*.tgz; do
+            d=/tmp/verify/$(basename "$a" .tgz)
             mkdir -p "$d"
             tar xzf "$a" -C "$d"
             scripts/verify.sh "$d"
@@ -157,7 +157,7 @@ jobs:
         with:
           name: dist-${{ matrix.recipe }}-${{ matrix.target.arch }}
           path: |
-            dist/*.tar.gz
+            dist/*.tgz
           if-no-files-found: error
 
   # A single green check to require on the branch, so the protection rule

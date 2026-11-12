@@ -367,6 +367,7 @@ case "$(uname -m)" in
   x86_64) ARCH=x86_64-apple-darwin ;;
   *)      throw "unsupported architecture $(uname -m)." ;;
 esac
+PLATFORM="macos-${ARCH%%-*}"
 
 # index.txt lines are: name, recipe, version, kind, package. An older
 # index has only the first three.
@@ -526,20 +527,28 @@ from_webi() {
 # Download, check, unpack and install one package, by package name.
 # Returns non-zero, having said why, if it didn't install.
 install_package() {
-  archive="unflab-$1-${version}-${ARCH}.tar.gz"
+  top="$1-${version}.${PLATFORM}"
+  archive="$top.tgz"
+  sums_name="SHA256SUMS-${PLATFORM}.txt"
 
-  if ! $CURL -o "$TMP/$archive" "$RELEASE_URL/$archive"; then
-    warn_np "    download failed"
-    return 1
+  # The old naming, until the latest release uses the new one.
+  if ! $CURL -o "$TMP/$archive" "$RELEASE_URL/$archive" 2>/dev/null; then
+    top=
+    archive="unflab-$1-${version}-${ARCH}.tar.gz"
+    sums_name="SHA256SUMS-${ARCH}.txt"
+    if ! $CURL -o "$TMP/$archive" "$RELEASE_URL/$archive"; then
+      warn_np "    download failed"
+      return 1
+    fi
   fi
 
   # Verify against the published checksum list rather than trusting the
   # transport alone -- this whole script is running piped into a shell.
-  sums="$TMP/SHA256SUMS-${ARCH}.txt"
+  sums="$TMP/$sums_name"
 
   if [ -z "$no_checksum" ]; then
     if [ ! -f "$sums" ]; then
-      $CURL -o "$sums" "$RELEASE_URL/SHA256SUMS-${ARCH}.txt" || true
+      $CURL -o "$sums" "$RELEASE_URL/$sums_name" || true
     fi
 
     if [ ! -s "$sums" ]; then
@@ -574,7 +583,7 @@ install_package() {
   # as a manual download. Run as a file, not piped, so it can find the
   # payload sitting beside it.
   # shellcheck disable=SC2086
-  sh "$dir/install.sh" $install_flags
+  sh "$dir${top:+/$top}/install.sh" $install_flags
 }
 
 # For each util specified...

@@ -39,7 +39,7 @@ DOCS_DIR = os.path.join(ROOT_DIR, "docs")
 EXTRA_DIR = os.path.join(ROOT_DIR, "site-extra")
 
 # The GH name of the repo
-REPO = os.environ.get("UNFLAB_REPO", "tomgidden/unflab")
+REPO = os.environ.get("UNFLAB_REPO", "unflab-app/unflab")
 
 # The URL to use for the bootstrap.
 BASE_URL = os.environ.get("UNFLAB_BASE_URL", "https://unflab.app")
@@ -244,17 +244,22 @@ for entry in sorted(os.listdir(os.path.join(ROOT_DIR, "utils"))):
 # live on push -- only what `get` acts on is pinned to the release.
 manifest = os.environ.get("UNFLAB_RELEASE_MANIFEST")
 if manifest:
-    # Asset names are unflab-<name>-<version>-<arch>.tar.gz. The name
-    # may contain dashes (sha256sum) and so may the arch triple, so
-    # anchor on the known suffix and take the last dash-separated field
-    # before it as the version.
+    # Asset names are <name>-<version>.macos-<cpu>.tgz, or in older
+    # releases unflab-<name>-<version>-<arch>.tar.gz. The name may
+    # contain dashes (sha256sum), so anchor on the known suffix and take
+    # the last dash-separated field before it as the version. Only the
+    # arm64 asset is kept: it is what the Download link points at.
     shipped = {}
+    assets = {}
     with open(manifest, encoding="utf-8") as fh:
         for line in fh:
-            m = re.match(r"^unflab-(.+)-([^-]+)-[^-]+-apple-darwin\.tar\.gz$",
-                         line.strip())
+            asset = line.strip()
+            m = (re.match(r"^(.+)-([^-]+)\.macos-arm64\.tgz$", asset)
+                 or re.match(r"^unflab-(.+)-([^-]+)-arm64-apple-darwin\.tar\.gz$",
+                             asset))
             if m:
                 shipped[m.group(1)] = m.group(2)
+                assets[m.group(1)] = asset
 
     if not shipped:
         sys.exit(f"generate-docs: no assets parsed from {manifest}")
@@ -393,7 +398,7 @@ for p in packages:
     # came from a real release -- linking one built from the working
     # tree would promise a download that doesn't exist yet.
     if manifest:
-        asset = f"unflab-{p.name}-{p.version}-arm64-apple-darwin.tar.gz"
+        asset = assets[p.name]
         out += [f"| Download | [`{asset}`]({RELEASE_URL}/{asset}) |"]
 
     if fetched:

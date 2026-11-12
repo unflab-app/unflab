@@ -21,7 +21,8 @@ ARCH="${1:?usage: litmus-test.sh <arch-triple>}"
 
 DIST="$ROOT_DIR/dist"
 shopt -s nullglob
-archives=("$DIST"/unflab-*-"$ARCH".tar.gz)
+PLATFORM="macos-${ARCH%%-*}"
+archives=("$DIST"/*."$PLATFORM".tgz)
 [[ ${#archives[@]} -gt 0 ]] || { echo "litmus-test: no archives for $ARCH in dist/" >&2; exit 1; }
 
 # A PATH with nothing but the base system on it.
@@ -31,8 +32,8 @@ pass=0
 fail=0
 
 for archive in "${archives[@]}"; do
-  base="$(basename "$archive" ".tar.gz")"
-  pkg="$(echo "$base" | sed -E "s/^unflab-(.+)-[^-]+-${ARCH}$/\1/")"
+  base="$(basename "$archive" ".tgz")"
+  pkg="$(echo "$base" | sed -E "s/^(.+)-[^-]+\.${PLATFORM}$/\1/")"
 
   echo "=============================================================="
   echo "== $pkg"
@@ -45,7 +46,7 @@ for archive in "${archives[@]}"; do
 
   # Install exactly as a user would, non-interactively.
   if ! env -i HOME="$home" PATH="$CLEAN_PATH" SHELL=/bin/zsh \
-       /bin/sh "$work/unpack/install.sh" --prefix "$home/.local/bin" --no-path </dev/null; then
+       /bin/sh "$work/unpack/$base/install.sh" --prefix "$home/.local/bin" --no-path </dev/null; then
     echo "FAIL  $pkg: install.sh failed"
     fail=$((fail + 1)); rm -rf "$work"; continue
   fi
@@ -102,7 +103,7 @@ for archive in "${archives[@]}"; do
 
   # Uninstall must leave nothing behind.
   env -i HOME="$home" PATH="$CLEAN_PATH" \
-    /bin/sh "$work/unpack/install.sh" --prefix "$home/.local/bin" --purge >/dev/null </dev/null || true
+    /bin/sh "$work/unpack/$base/install.sh" --prefix "$home/.local/bin" --purge >/dev/null </dev/null || true
   leftover="$(find "$home/.local" "$home/.config" -type f 2>/dev/null || true)"
   if [[ -n "$leftover" ]]; then
     echo "  FAIL  purge left files behind:"

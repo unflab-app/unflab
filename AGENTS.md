@@ -20,7 +20,7 @@ the gate is what proves none of it survived into the artefact.
     utils/unflab/               the `unflab` helper, as a package
     scripts/build.sh            fetch, verify, extract, build, stage
     scripts/verify.sh           the gate
-    scripts/package.sh          staged tree -> dist/*.tar.gz
+    scripts/package.sh          staged tree -> dist/*.tgz
     scripts/litmus-test.sh      install into a throwaway HOME and use it
     scripts/build-key.sh        content hash deciding what gets rebuilt
     scripts/templates/          install.sh and the curl|sh bootstrap
