@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Stage built utilities into release archives, one .tar.gz per package.
+# Stage built utilities into release archives, one .tgz per package.
 #
 # Reads out/<pkg>/ (as produced by a recipe's unflab_stage) plus that
 # package's manifest, generates a self-contained install.sh with the
@@ -30,6 +30,10 @@ fi
 [[ ${#packages[@]} -gt 0 ]] || { echo "package.sh: nothing in out/" >&2; exit 1; }
 
 mkdir -p "$DIST_DIR"
+
+# Release names say macos-<cpu> rather than the build's arch triple:
+# they are for people reading the Releases page.
+PLATFORM="macos-${ARCH%%-*}"
 
 for pkg in "${packages[@]}"; do
   stage="$OUT_DIR/$pkg"
@@ -90,13 +94,17 @@ for pkg in "${packages[@]}"; do
   # discovered by a user, on their machine, after downloading.
   sh -n "$install_sh" || { echo "package.sh: generated install.sh for $pkg is not valid sh" >&2; exit 1; }
 
-  archive="$DIST_DIR/unflab-${pkg}-${version}-${ARCH}.tar.gz"
+  # The archive unpacks into one directory of the same name, never into
+  # the current one. -s is bsdtar's rename; S keeps it off the targets
+  # of any symlinks a package stages, which are relative to the package.
+  top="${pkg}-${version}.${PLATFORM}"
+  archive="$DIST_DIR/${top}.tgz"
   # --exclude .unflab: build metadata, not part of what users get.
-  tar czf "$archive" -C "$stage" --exclude='./.unflab' .
+  tar czf "$archive" -C "$stage" --exclude='./.unflab' -s ",^\\.,${top},S" .
   echo "==> Packaged $archive"
 done
 
 # One checksum file per arch, which the `get` bootstrap verifies each
 # download against.
-( cd "$DIST_DIR" && shasum -a 256 unflab-*-"${ARCH}".tar.gz > "SHA256SUMS-${ARCH}.txt" )
-echo "==> Wrote $DIST_DIR/SHA256SUMS-${ARCH}.txt"
+( cd "$DIST_DIR" && shasum -a 256 -- *."${PLATFORM}".tgz >"SHA256SUMS-${PLATFORM}.txt" )
+echo "==> Wrote $DIST_DIR/SHA256SUMS-${PLATFORM}.txt"

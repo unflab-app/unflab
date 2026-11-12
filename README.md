@@ -22,7 +22,7 @@ unflab tree
 ```
 
 And, if you're not a fan of running unknown scripts, all the packages
-are available for download as `.tar.gz` files [on the _Releases_ page](https://github.com/unflab-app/unflab/releases)
+are available for download as `.tgz` files [on the _Releases_ page](https://github.com/unflab-app/unflab/releases)
 that you can download and [install manually](#installing-manually).
 
 No Homebrew. No Xcode. No runtime dependencies. All packages need to
@@ -140,8 +140,8 @@ Each package ships its own `install.sh`. The `curl | sh` line above runs
 it for you; a manual download runs the same script, the same way:
 
 ```sh
-mkdir tmp; cd tmp
-tar xzf unflab-tree-2.3.2-arm64-apple-darwin.tar.gz
+tar xzf tree-2.3.2.macos-arm64.tgz
+cd tree-2.3.2.macos-arm64
 ./install.sh                        # into ~/.local/bin
 ./install.sh --prefix /usr/local/bin
 ./install.sh --uninstall            # remove it

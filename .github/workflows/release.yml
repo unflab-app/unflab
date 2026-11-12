@@ -238,6 +238,8 @@ jobs:
           mkdir -p dist
           gh release download "$prev" --repo "$GITHUB_REPOSITORY" \
             --pattern 'index.txt' --dir prev
+          arch='${{ matrix.target.arch }}'
+          platform="macos-${arch%%-*}"
           n=0
           # Older indexes have three columns; an empty package column
           # means the row is the package itself. Rows naming another
@@ -245,7 +247,7 @@ jobs:
           while IFS=$'\t' read -r name recipe version kind package _; do
             [ "$recipe" = '${{ matrix.recipe }}' ] || continue
             [ "${package:-$name}" = "$name" ] || continue
-            asset="unflab-$name-$version-${{ matrix.target.arch }}.tar.gz"
+            asset="$name-$version.$platform.tgz"
             gh release download "$prev" --repo "$GITHUB_REPOSITORY" \
               --pattern "$asset" --dir dist || {
                 echo "$asset missing from $prev -- building instead"
@@ -279,7 +281,7 @@ jobs:
         with:
           name: dist-${{ matrix.recipe }}-${{ matrix.target.arch }}
           path: |
-            dist/*.tar.gz
+            dist/*.tgz
             dist/.key-*
           if-no-files-found: error
           include-hidden-files: true
@@ -316,10 +318,10 @@ jobs:
         run: |
           set -euo pipefail
           cd dist
-          for arch in arm64-apple-darwin x86_64-apple-darwin; do
-            if ls unflab-*-"$arch".tar.gz >/dev/null 2>&1; then
-              shasum -a 256 unflab-*-"$arch".tar.gz > "SHA256SUMS-$arch.txt"
-              echo "SHA256SUMS-$arch.txt: $(wc -l < "SHA256SUMS-$arch.txt") entries"
+          for platform in macos-arm64 macos-x86_64; do
+            if ls *."$platform".tgz >/dev/null 2>&1; then
+              shasum -a 256 *."$platform".tgz > "SHA256SUMS-$platform.txt"
+              echo "SHA256SUMS-$platform.txt: $(wc -l < "SHA256SUMS-$platform.txt") entries"
             fi
           done
 
@@ -344,7 +346,7 @@ jobs:
             [ -n "$name" ] || continue
             # Stubs publish text, not archives.
             [ "${kind:-build}" = build ] || continue
-            if ! ls dist/unflab-"${package:-$name}"-"$version"-*.tar.gz >/dev/null 2>&1; then
+            if ! ls dist/"${package:-$name}"-"$version".macos-*.tgz >/dev/null 2>&1; then
               echo "no archive for $name $version" >&2
               missing=$((missing + 1))
             fi
@@ -356,7 +358,7 @@ jobs:
         with:
           tag_name: ${{ needs.recipes.outputs.ref }}
           files: |
-            dist/*.tar.gz
+            dist/*.tgz
             dist/SHA256SUMS-*.txt
             dist/index.txt
             dist/BUILD-KEYS.txt
