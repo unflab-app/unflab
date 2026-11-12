@@ -356,7 +356,7 @@ jobs:
             dist/SHA256SUMS-*.txt
             dist/index.txt
             dist/BUILD-KEYS.txt
-          generate_release_notes: true
+          generate_release_notes: false
 
       # The site takes index.txt and the per-package versions from the
       # latest release, so it has to redeploy once that release exists.
