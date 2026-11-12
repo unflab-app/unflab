@@ -39,7 +39,7 @@ DOCS_DIR = os.path.join(ROOT_DIR, "docs")
 EXTRA_DIR = os.path.join(ROOT_DIR, "site-extra")
 
 # The GH name of the repo
-REPO = os.environ.get("UNFLAB_REPO", "tomgidden/unflab")
+REPO = os.environ.get("UNFLAB_REPO", "unflab-app/unflab")
 
 # The URL to use for the bootstrap.
 BASE_URL = os.environ.get("UNFLAB_BASE_URL", "https://unflab.app")
