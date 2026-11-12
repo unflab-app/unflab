@@ -11,13 +11,13 @@
 # `xq`) is not shipped; utils/NOT-SHIPPED.md records why.
 
 UNFLAB_NAME=yq
-UNFLAB_VERSION=4.54.1
+UNFLAB_VERSION=4.54.3
 UNFLAB_VERSION_FLAG=--version
 UNFLAB_HOMEPAGE=https://mikefarah.gitbook.io/yq/
 UNFLAB_LICENSE=MIT
-UNFLAB_SOURCE=https://github.com/mikefarah/yq/archive/refs/tags/v4.54.1.tar.gz
+UNFLAB_SOURCE=https://github.com/mikefarah/yq/archive/refs/tags/v4.54.3.tar.gz
 UNFLAB_CHECK=github:mikefarah/yq
-UNFLAB_SHA256=0cec36e7035dd56c508bda56245cbd71e4495d2317bc2528165c4162bce79335
+UNFLAB_SHA256=93143d49b2a3bd6cb723477f585366b29f70c636af4653191d61b49b0c47de7f
 UNFLAB_ATTEST='none:GitHub auto-generated tag archive; upstream checksums cover its release binaries, not this'
 UNFLAB_TOOLCHAIN="go pandoc"
 UNFLAB_CLASS=3
