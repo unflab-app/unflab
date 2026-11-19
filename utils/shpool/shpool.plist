@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  A sample launchd agent that starts the shpool daemon at login and
+  restarts it if it exits -- the same thing Homebrew's `brew services
+  start shpool` sets up. Nothing loads this file where it is installed.
+
+  The binary and log paths below are placeholders: launchd expands
+  neither ~ nor $HOME, so both must be absolute. The notes printed by
+  `install.sh` give a sed command that fills them in.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>app.unflab.shpool</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>@SHPOOL@</string>
+    <string>daemon</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>@LOG@</string>
+  <key>StandardErrorPath</key>
+  <string>@LOG@</string>
+</dict>
+</plist>

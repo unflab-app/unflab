@@ -1,0 +1,5 @@
+bin	755	bin/shpool	shpool	-
+doc	644	README.md	README.md	-
+doc	644	CONFIG.md	CONFIG.md	-
+doc	644	LICENSE	LICENSE	-
+data	644	shpool.plist	shpool.plist	-

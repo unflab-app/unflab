@@ -1,0 +1,43 @@
+--- a/libshpool/src/config.rs
++++ b/libshpool/src/config.rs
+@@ -50,6 +50,10 @@
+     /// - User level config: $XDG_CONFIG_HOME/shpool/config.toml or
+     ///   $HOME/.config/shpool/config.toml if $XDG_CONFIG_HOME is not set
+     ///
++    /// On macOS the user level config is read from the XDG location above
++    /// if that shpool directory exists, and otherwise from
++    /// $HOME/Library/Application Support/shpool/config.toml.
++    ///
+     /// For each top level field, values read later will overrides those read
+     /// eariler. The exact merging strategy is as defined in
+     /// `Config::merge`.
+@@ -145,8 +149,17 @@
+         Ok(dir)
+     }
+ 
++    // Many command-line users on macOS keep their config under ~/.config,
++    // as they would on Linux, so an existing shpool directory there takes
++    // precedence. Otherwise use the platform's native location, which
++    // keeps existing configs working.
+     #[cfg(any(target_os = "macos", target_os = "ios"))]
+     fn config_base_dir() -> anyhow::Result<PathBuf> {
++        let xdg = Self::xdg_config_base_dir()?;
++        if xdg.join("shpool").is_dir() {
++            return Ok(xdg);
++        }
++
+         let user_info = user::info().context("getting user info")?;
+         let mut path = PathBuf::from(user_info.home_dir);
+         path.push("Library");
+@@ -156,6 +169,11 @@
+ 
+     #[cfg(not(any(target_os = "macos", target_os = "ios", target_os = "windows")))]
+     fn config_base_dir() -> anyhow::Result<PathBuf> {
++        Self::xdg_config_base_dir()
++    }
++
++    #[cfg(not(target_os = "windows"))]
++    fn xdg_config_base_dir() -> anyhow::Result<PathBuf> {
+         match std::env::var("XDG_CONFIG_DIR") {
+             Ok(v) => Ok(PathBuf::from(v)),
+             Err(_) => {

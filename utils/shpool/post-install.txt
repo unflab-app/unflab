@@ -1,0 +1,17 @@
+shpool starts its own daemon on first `shpool attach`; nothing more is
+needed. To start it at login instead, a sample launchd agent is in
+
+  $DATADIR/shpool.plist
+
+Stop any running daemon first (`shpool kill` each session), then:
+
+  mkdir -p ~/Library/LaunchAgents
+  sed -e "s|@SHPOOL@|$PREFIX/shpool|" \
+      -e "s|@LOG@|$HOME/Library/Logs/shpool.log|" \
+      "$DATADIR/shpool.plist" > ~/Library/LaunchAgents/app.unflab.shpool.plist
+  launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/app.unflab.shpool.plist
+
+To remove it, before uninstalling shpool:
+
+  launchctl bootout gui/$(id -u)/app.unflab.shpool
+  rm ~/Library/LaunchAgents/app.unflab.shpool.plist
