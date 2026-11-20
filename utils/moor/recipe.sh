@@ -25,7 +25,6 @@ UNFLAB_ATTEST='none:GitHub auto-generated tag archive; upstream publishes no che
 UNFLAB_TOOLCHAIN="go"
 UNFLAB_CLASS=3
 UNFLAB_PACKAGES=moor
-UNFLAB_ALT_NAMES="moar"
 
 unflab_build() {
   # CGO_ENABLED=0 for a binary that links nothing outside libSystem.
