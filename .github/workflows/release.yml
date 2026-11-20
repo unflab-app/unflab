@@ -143,7 +143,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # printf '%s' "$msg" | git tag -a "$next" -F -
-          printf '**Full Changelog:** https://github.com/unflab-app/unflab/compare/$prev...$next' \
+          printf '**Full Changelog:** https://github.com/unflab-app/unflab/compare/%s...%s\n' "$prev" "$next" \
             | git tag -a "$next" -F -
 
           git push origin "$next"
