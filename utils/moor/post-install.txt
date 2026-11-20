@@ -1,0 +1,9 @@
+moor isn't set as your pager; that's left to you, since it changes what
+git, man and everything else that pages output will use. To do it, add
+to your shell's rc file (~/.zshrc, ~/.bash_profile):
+
+  export PAGER=$PREFIX/moor       # default pager
+  export MANPAGER=$PREFIX/moor    # pager for man pages
+
+man uses PAGER when MANPAGER is unset (and MANCOLOR isn't set), so
+the first line alone covers both.
