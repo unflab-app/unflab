@@ -6,13 +6,13 @@
 # should install the same way as everything else.
 
 UNFLAB_NAME=miller
-UNFLAB_VERSION=6.22.0
+UNFLAB_VERSION=6.23.0
 UNFLAB_VERSION_FLAG=--version
 UNFLAB_HOMEPAGE=https://miller.readthedocs.io/
 UNFLAB_LICENSE=BSD-2-Clause
-UNFLAB_SOURCE=https://github.com/johnkerl/miller/archive/refs/tags/v6.22.0.tar.gz
+UNFLAB_SOURCE=https://github.com/johnkerl/miller/archive/refs/tags/v6.23.0.tar.gz
 UNFLAB_CHECK=github:johnkerl/miller
-UNFLAB_SHA256=a3cec3b8bf74f1e6eddb708d6ae768e6ec70f10e345980de42cbc24df15f0c70
+UNFLAB_SHA256=69df270081e0d9dbc9e15f8abf151324be63a6a224535d5f5142578435eba36f
 UNFLAB_ATTEST='none:upstream checksums cover release binaries, not the tag archive we build from'
 UNFLAB_TOOLCHAIN="go"
 UNFLAB_CLASS=3
