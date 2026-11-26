@@ -174,22 +174,22 @@ clean:
 #
 # Release engineering for the repo's owner: merging the nightly bump PRs
 # and cutting releases. Needs gh, authenticated with write access to the
-# repo. Deliberately not in `make list`. scripts/pr.sh says what each
-# does; `make pr-cycle` is the whole round, asking before each step.
+# repo. Deliberately not in `make list`. scripts/releng.sh says what each
+# does; `make releng` is the whole round, asking before each step.
 
-.PHONY: pr-cycle pr-list pr-merges pr-recheck-fails pr-check-updates pr-release
+.PHONY: releng releng-list releng-merges releng-recheck-fails releng-check-updates releng-release
 
-pr-cycle:
-	@$(ROOT)/scripts/pr.sh cycle
-pr-list:
-	@$(ROOT)/scripts/pr.sh list
-pr-merges:
-	@$(ROOT)/scripts/pr.sh merge
-pr-recheck.%:
-	@$(ROOT)/scripts/pr.sh recheck $*
-pr-recheck-fails:
-	@$(ROOT)/scripts/pr.sh recheck-fails
-pr-check-updates:
-	@$(ROOT)/scripts/pr.sh check-updates
-pr-release:
-	@$(ROOT)/scripts/pr.sh release
+releng:
+	@$(ROOT)/scripts/releng.sh cycle
+releng-list:
+	@$(ROOT)/scripts/releng.sh list
+releng-merges:
+	@$(ROOT)/scripts/releng.sh merge
+releng-recheck.%:
+	@$(ROOT)/scripts/releng.sh recheck $*
+releng-recheck-fails:
+	@$(ROOT)/scripts/releng.sh recheck-fails
+releng-check-updates:
+	@$(ROOT)/scripts/releng.sh check-updates
+releng-release:
+	@$(ROOT)/scripts/releng.sh release

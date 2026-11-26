@@ -426,8 +426,13 @@ pool. Another reason for one Z.
 Run the **Release** workflow by hand: Actions → Release → Run
 workflow, or
 
-    gh workflow run release.yml -f bump=Z            # or Y
+    gh workflow run release.yml                      # Y or Z worked out
+    gh workflow run release.yml -f bump=Y            # or force one
     gh workflow run release.yml -f dry_run=true      # just show it
+
+`bump` defaults to `auto`: `scripts/release-plan.sh` applies the table
+above, calling it a Y when a file in every recipe's build key changed
+and a Z otherwise. Run it locally to see the answer first.
 
 It refuses unless `main`'s Build run **at HEAD** is green — if that run
 is still queued or running, it waits for it, so dispatching straight

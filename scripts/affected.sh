@@ -87,7 +87,7 @@ for f in "$@"; do
     #
     # templates/get.sh is the site's bootstrap: served from the site,
     # never staged into a package. The docs generator, prereqs, bump,
-    # check-updates, pr and release-plan likewise touch no artefact --
+    # check-updates, releng and release-plan likewise touch no artefact --
     # verified with build-key.sh, which does not hash any of them.
     docs/*|\
     site-extra/*|\
@@ -96,7 +96,7 @@ for f in "$@"; do
     scripts/prereqs.sh|\
     scripts/bump.sh|\
     scripts/check-updates.sh|\
-    scripts/pr.sh|\
+    scripts/releng.sh|\
     scripts/release-plan.sh|\
     scripts/refresh-keyrings.sh|\
     scripts/install-local.sh|\
@@ -108,6 +108,7 @@ for f in "$@"; do
     .github/workflows/pages.yml|\
     .github/workflows/bump.yml|\
     .github/workflows/check-updates.yml|\
+    .github/workflows/remind.yml|\
     .github/workflows/release.yml)
       : ;;
 

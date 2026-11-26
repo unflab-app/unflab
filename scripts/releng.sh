@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# pr.sh [command] -- maintainer release engineering: bump PRs to release.
+# releng.sh [command] -- maintainer release engineering: bump PRs to release.
 #
-#   pr.sh                  the whole round, interactively (`make pr-cycle`)
-#   pr.sh list             open PRs, oldest first, and what each is waiting on
-#   pr.sh merge [-y]       merge the green ones after one confirmation
-#   pr.sh recheck <N>...   re-run the failed and cancelled checks on PRs
-#   pr.sh recheck-fails    ...on every PR whose checks failed
-#   pr.sh check-updates    propose bumps now instead of at the nightly run
-#   pr.sh release [-y]     tag and release main, Y or Z worked out for you
+#   releng.sh                  the whole round, interactively (`make releng`)
+#   releng.sh list             open PRs, oldest first, and what each is waiting on
+#   releng.sh merge [-y]       merge the green ones after one confirmation
+#   releng.sh recheck <N>...   re-run the failed and cancelled checks on PRs
+#   releng.sh recheck-fails    ...on every PR whose checks failed
+#   releng.sh check-updates    propose bumps now instead of at the nightly run
+#   releng.sh release [-y]     tag and release main, Y or Z worked out for you
 #
 # The round: list the PRs; re-run any red ones and wait (most reds are a
 # runner that went away, not the bump); merge the green ones oldest
@@ -55,7 +55,7 @@ POLL=30
 
 say()  { printf '%s\n' "$*"; }
 warn() { printf '%s\n' "$*" >&2; }
-die()  { warn "pr.sh: $*"; exit 1; }
+die()  { warn "releng.sh: $*"; exit 1; }
 
 # ask <prompt> <default>: the answer, lowercased. Reads the terminal, so
 # it works under make.
