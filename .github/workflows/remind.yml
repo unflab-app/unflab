@@ -38,13 +38,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PUSHOVER_USER: ${{ secrets.CI_REMINDER_PUSHOVER_USER_KEY }}
           PUSHOVER_TOKEN: ${{ secrets.CI_REMINDER_PUSHOVER_API_TOKEN }}
-          TIERS: ${{ secrets.CI_REMINDER_PUSHOVER_REMIND_AFTER_DAYS }}
+          TIERS: ${{ vars.CI_REMINDER_PUSHOVER_REMIND_AFTER_DAYS }}
           COMMAND: ${{ vars.CI_REMINDER_COMMAND || 'make releng' }}
         run: |
           set -euo pipefail
 
           if [ -z "$PUSHOVER_USER" ] || [ -z "$PUSHOVER_TOKEN" ] || [ -z "$TIERS" ]; then
-            echo "::warning::CI_REMINDER_PUSHOVER_* secrets not set; nothing sent"
+            echo "::warning::CI_REMINDER_PUSHOVER_* secrets or variable not set; nothing sent"
             exit 0
           fi
           echo "$TIERS" | jq -e 'type == "array" and all(.[]; length == 2)' >/dev/null ||
