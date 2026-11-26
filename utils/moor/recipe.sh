@@ -14,13 +14,13 @@
 # program that pages output does, so the post-install notes say how.
 
 UNFLAB_NAME=moor
-UNFLAB_VERSION=2.19.7
+UNFLAB_VERSION=2.19.8
 UNFLAB_VERSION_FLAG=--version
 UNFLAB_HOMEPAGE=https://github.com/walles/moor
 UNFLAB_LICENSE=BSD-2-Clause
-UNFLAB_SOURCE=https://github.com/walles/moor/archive/refs/tags/v2.19.7.tar.gz
+UNFLAB_SOURCE=https://github.com/walles/moor/archive/refs/tags/v2.19.8.tar.gz
 UNFLAB_CHECK=github:walles/moor
-UNFLAB_SHA256=940547b19cd7307b93572739fbc9b71dcb196a191f05fb941e472295d9389f3a
+UNFLAB_SHA256=0f18f8a2a93b9188b64495c780458f6c34725432b59c56b478d31313b8420827
 UNFLAB_ATTEST='none:GitHub auto-generated tag archive; upstream publishes no checksum for it'
 UNFLAB_TOOLCHAIN="go"
 UNFLAB_CLASS=3
