@@ -86,9 +86,9 @@ for f in "$@"; do
     # Cannot reach an artefact or a test.
     #
     # templates/get.sh is the site's bootstrap: served from the site,
-    # never staged into a package. The docs generator, prereqs, bump and
-    # check-updates likewise touch no artefact -- verified with
-    # build-key.sh, which does not hash any of them.
+    # never staged into a package. The docs generator, prereqs, bump,
+    # check-updates and merge-green likewise touch no artefact --
+    # verified with build-key.sh, which does not hash any of them.
     docs/*|\
     site-extra/*|\
     scripts/generate-docs.py|\
@@ -96,6 +96,7 @@ for f in "$@"; do
     scripts/prereqs.sh|\
     scripts/bump.sh|\
     scripts/check-updates.sh|\
+    scripts/merge-green.sh|\
     scripts/refresh-keyrings.sh|\
     scripts/install-local.sh|\
     docmd.config.base.json|\
