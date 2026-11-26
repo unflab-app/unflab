@@ -1,0 +1,12 @@
+bin	755	bin/qmv	qmv	-
+bin	755	bin/qcp	qcp	-
+bin	755	bin/imv	imv	-
+bin	755	bin/icp	icp	-
+bin	755	bin/deurlname	deurlname	-
+man1	644	share/man/man1/qmv.1	qmv.1	-
+man1	644	share/man/man1/qcp.1	qcp.1	-
+man1	644	share/man/man1/imv.1	imv.1	-
+man1	644	share/man/man1/icp.1	icp.1	-
+man1	644	share/man/man1/deurlname.1	deurlname.1	-
+doc	644	README.md	README.md	-
+doc	644	LICENSE	LICENSE	-
