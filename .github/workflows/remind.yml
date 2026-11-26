@@ -11,9 +11,10 @@ name: Remind about waiting PRs
 # bump PR updated in place to a newer version doesn't reset its clock.
 # Drafts are left out: work in progress shouldn't nag.
 #
-# The payload is plain JSON (title, message, priority, url, url_title);
-# the webhook's Data Extraction settings in the Pushover dashboard map
-# it onto the notification, e.g. {{title}} and {{message}}.
+# Sent through Pushover's Messaging API, which takes a priority per
+# message; a webhook's fields are mapped in the Pushover dashboard.
+# Priority 2 (emergency) repeats every 5 minutes for an hour or until
+# acknowledged, which Pushover requires retry and expire to say.
 #
 # vars.CI_REMINDER_COMMAND, if set, ends the message -- something to
 # paste, like `cd <checkout> && make releng`.
@@ -35,13 +36,14 @@ jobs:
       - name: Notify if any PR is overdue
         env:
           GH_TOKEN: ${{ github.token }}
-          WEBHOOK: ${{ secrets.CI_REMINDER_PUSHOVER_WEBHOOK }}
+          PUSHOVER_USER: ${{ secrets.CI_REMINDER_PUSHOVER_USER_KEY }}
+          PUSHOVER_TOKEN: ${{ secrets.CI_REMINDER_PUSHOVER_API_TOKEN }}
           TIERS: ${{ secrets.CI_REMINDER_PUSHOVER_REMIND_AFTER_DAYS }}
           COMMAND: ${{ vars.CI_REMINDER_COMMAND || 'make releng' }}
         run: |
           set -euo pipefail
 
-          if [ -z "$WEBHOOK" ] || [ -z "$TIERS" ]; then
+          if [ -z "$PUSHOVER_USER" ] || [ -z "$PUSHOVER_TOKEN" ] || [ -z "$TIERS" ]; then
             echo "::warning::CI_REMINDER_PUSHOVER_* secrets not set; nothing sent"
             exit 0
           fi
@@ -78,13 +80,19 @@ jobs:
             exit 0
           fi
           echo "$payload" | jq '{title, priority, message}'
-          # Pushover answers 200 even when its selectors found nothing to
-          # send, so the reply is checked, not just the status code.
-          reply=$(curl -fsS -X POST -H 'Content-Type: application/json' \
-                    --data "$payload" "$WEBHOOK")
-          echo "$reply"
-          case "$reply" in
-            *"no message could be extracted"*)
-              echo "::error::Pushover sent nothing: check the webhook's Data Extraction selectors"
-              exit 1 ;;
-          esac
+          # --form-string, not -F: a PR title starting with @ or < would
+          # otherwise be read as a filename.
+          field() { echo "$payload" | jq -r ".$1"; }
+          priority=$(field priority)
+          extra=()
+          [ "$priority" != 2 ] || extra=(--form-string retry=300 --form-string expire=3600)
+          curl -sS --fail-with-body https://api.pushover.net/1/messages.json \
+            --form-string "token=$PUSHOVER_TOKEN" \
+            --form-string "user=$PUSHOVER_USER" \
+            --form-string "title=$(field title)" \
+            --form-string "message=$(field message)" \
+            --form-string "priority=$priority" \
+            --form-string "url=$(field url)" \
+            --form-string "url_title=$(field url_title)" \
+            "${extra[@]}"
+          echo
