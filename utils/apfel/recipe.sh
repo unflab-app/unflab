@@ -31,11 +31,11 @@
 # no model to answer prompts with.
 
 UNFLAB_NAME=apfel
-UNFLAB_VERSION=1.17.1
+UNFLAB_VERSION=1.20.0
 UNFLAB_HOMEPAGE=https://apfel.franzai.com
 UNFLAB_LICENSE=MIT
-UNFLAB_SOURCE=https://github.com/Arthur-Ficial/apfel/archive/refs/tags/v1.17.1.tar.gz
-UNFLAB_SHA256=6fd6cdc28e1e3b257e2bdbd0e6758d49472ec20baa16132cbb3daf79a94cec28
+UNFLAB_SOURCE=https://github.com/Arthur-Ficial/apfel/archive/refs/tags/v1.20.0.tar.gz
+UNFLAB_SHA256=0708e93e35a6617424cc2b49d7f7f518dd33a87312c25db49bfc7dd5f5aa6180
 UNFLAB_ATTEST='none:GitHub auto-generated tag archive; upstream publishes prebuilt binaries but no checksum for the source'
 UNFLAB_CHECK=github:Arthur-Ficial/apfel
 UNFLAB_TOOLCHAIN=""
