@@ -13,10 +13,10 @@ on:
   workflow_dispatch:
     inputs:
       bump:
-        description: "Z for packages, Y for the installer or build scripts"
+        description: "auto works it out (release-plan.sh); Z for packages, Y for the installer or build scripts"
         type: choice
-        options: [Z, Y]
-        default: Z
+        options: [auto, Z, Y]
+        default: auto
       summary:
         description: "Tag subject after the version (blank = recipes changed)"
         required: false
@@ -90,26 +90,27 @@ jobs:
             *)  echo "Build on main at $head is '$state', not green" >&2; exit 1 ;;
           esac
 
-          prev=$(git tag -l 'v*' --sort=-v:refname | head -1)
-          IFS=. read -r x y z <<< "${prev#v}"
-          case "$BUMP" in
-            Y) next="v$x.$((y + 1)).0" ;;
-            *) next="v$x.$y.$((z + 1))" ;;
-          esac
-
-          # What the release will rebuild: recipes whose build-key
-          # inputs changed since the last tag. Not affected.sh, which
-          # also rebuilds for CI-only changes that alter no artefact.
-          recipes=""
-          for r in $(scripts/resolve.sh list-recipes); do
-            # shellcheck disable=SC2046
-            if ! git diff --quiet "$prev" HEAD -- $(scripts/build-key.sh --inputs "$r"); then
-              recipes="$recipes $r"
-            fi
-          done
-          if [ -z "$recipes" ]; then
+          # What the release will rebuild, and the bump that calls for:
+          # recipes whose build-key inputs changed since the last tag,
+          # and Y if one of those is in every recipe's key. Not
+          # affected.sh, which also rebuilds for CI-only changes that
+          # alter no artefact. The same script answers for `make
+          # releng-release`, so the two can't disagree.
+          eval "$(scripts/release-plan.sh HEAD)"
+          if [ "$bump" = none ]; then
             echo "nothing since $prev changes an artefact -- no release needed" >&2
             exit 1
+          fi
+          echo "Plan: $bump ($next), rebuilding: $recipes"
+          [ -z "$shared" ] || echo "Y because these changed: $shared"
+
+          if [ "$BUMP" != auto ] && [ "$BUMP" != "$bump" ]; then
+            echo "Overriding the plan's $bump with $BUMP"
+            IFS=. read -r x y z <<< "${prev#v}"
+            case "$BUMP" in
+              Y) next="v$x.$((y + 1)).0" ;;
+              Z) next="v$x.$y.$((z + 1))" ;;
+            esac
           fi
 
           # # A recipe new since $prev has no recipe.sh there. `|| true`

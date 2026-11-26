@@ -1,0 +1,98 @@
+name: Remind about waiting PRs
+
+# One Pushover notification a morning listing every open PR that has
+# waited past a threshold, so bumps get merged and released rather than
+# piling up. Silent when nothing is overdue.
+#
+# CI_REMINDER_PUSHOVER_REMIND_AFTER_DAYS is a JSON list of [days,
+# priority] pairs, e.g. [[1,-1],[3,0],[7,1]]: a PR open longer than
+# `days` earns that priority, and the notification goes out at the
+# highest any PR has earned. Age is from when the PR was opened, so a
+# bump PR updated in place to a newer version doesn't reset its clock.
+# Drafts are left out: work in progress shouldn't nag.
+#
+# Sent through Pushover's Messaging API, which takes a priority per
+# message; a webhook's fields are mapped in the Pushover dashboard.
+# Priority 2 (emergency) repeats every 5 minutes for an hour or until
+# acknowledged, which Pushover requires retry and expire to say.
+#
+# vars.CI_REMINDER_COMMAND, if set, ends the message -- something to
+# paste, like `cd <checkout> && make releng`.
+
+on:
+  schedule:
+    # UTC. After bump.yml, so a PR it updated this morning is listed
+    # with its new title.
+    - cron: "37 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  pull-requests: read
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify if any PR is overdue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUSHOVER_USER: ${{ secrets.CI_REMINDER_PUSHOVER_USER_KEY }}
+          PUSHOVER_TOKEN: ${{ secrets.CI_REMINDER_PUSHOVER_API_TOKEN }}
+          TIERS: ${{ vars.CI_REMINDER_PUSHOVER_REMIND_AFTER_DAYS }}
+          COMMAND: ${{ vars.CI_REMINDER_COMMAND || 'make releng' }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$PUSHOVER_USER" ] || [ -z "$PUSHOVER_TOKEN" ] || [ -z "$TIERS" ]; then
+            echo "::warning::CI_REMINDER_PUSHOVER_* secrets or variable not set; nothing sent"
+            exit 0
+          fi
+          echo "$TIERS" | jq -e 'type == "array" and all(.[]; length == 2)' >/dev/null ||
+            { echo "::error::CI_REMINDER_PUSHOVER_REMIND_AFTER_DAYS isn't [[days, priority], ...]"; exit 1; }
+
+          prs=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 \
+                  --json number,title,isDraft,createdAt)
+
+          # Pushover caps a message at 1024 characters; a long list is
+          # cut, and the link to the PR list carries the rest.
+          payload=$(jq -n --argjson prs "$prs" --argjson tiers "$TIERS" \
+                      --arg repo "$GITHUB_REPOSITORY" --arg cmd "$COMMAND" '
+            ($tiers | sort_by(.[0])) as $t
+            | [ $prs[] | select(.isDraft | not)
+                | ((now - (.createdAt | fromdate)) / 86400) as $age
+                | ([$t[] | select(.[0] <= $age) | .[1]] | last) as $p
+                | select($p != null)
+                | {number, title, days: ($age | floor), priority: $p} ]
+            | sort_by(.number) as $due
+            | ($due | length) as $n
+            | if $n == 0 then empty else
+                { title: "unflab: \($n) PR\(if $n == 1 then "" else "s" end) waiting",
+                  message: (([$due[] | "#\(.number) \(.title) (\(.days)d)"]
+                             | join("\n") | .[0:900])
+                            + "\n\n" + $cmd),
+                  priority: ([$due[].priority] | max),
+                  url: "https://github.com/\($repo)/pulls",
+                  url_title: "Open PRs" }
+              end')
+
+          if [ -z "$payload" ]; then
+            echo "Nothing overdue."
+            exit 0
+          fi
+          echo "$payload" | jq '{title, priority, message}'
+          # --form-string, not -F: a PR title starting with @ or < would
+          # otherwise be read as a filename.
+          field() { echo "$payload" | jq -r ".$1"; }
+          priority=$(field priority)
+          extra=()
+          [ "$priority" != 2 ] || extra=(--form-string retry=300 --form-string expire=3600)
+          curl -sS --fail-with-body https://api.pushover.net/1/messages.json \
+            --form-string "token=$PUSHOVER_TOKEN" \
+            --form-string "user=$PUSHOVER_USER" \
+            --form-string "title=$(field title)" \
+            --form-string "message=$(field message)" \
+            --form-string "priority=$priority" \
+            --form-string "url=$(field url)" \
+            --form-string "url_title=$(field url_title)" \
+            "${extra[@]}"
+          echo

@@ -169,3 +169,27 @@ check-updates:
 clean:
 	@rm -rf $(ROOT)/build $(ROOT)/out $(ROOT)/dist
 	@echo "Removed build/, out/ and dist/"
+
+# --- Maintainer only ----------------------------------------------------
+#
+# Release engineering for the repo's owner: merging the nightly bump PRs
+# and cutting releases. Needs gh, authenticated with write access to the
+# repo. Deliberately not in `make list`. scripts/releng.sh says what each
+# does; `make releng` is the whole round, asking before each step.
+
+.PHONY: releng releng-list releng-merges releng-recheck-fails releng-check-updates releng-release
+
+releng:
+	@$(ROOT)/scripts/releng.sh cycle
+releng-list:
+	@$(ROOT)/scripts/releng.sh list
+releng-merges:
+	@$(ROOT)/scripts/releng.sh merge
+releng-recheck.%:
+	@$(ROOT)/scripts/releng.sh recheck $*
+releng-recheck-fails:
+	@$(ROOT)/scripts/releng.sh recheck-fails
+releng-check-updates:
+	@$(ROOT)/scripts/releng.sh check-updates
+releng-release:
+	@$(ROOT)/scripts/releng.sh release
