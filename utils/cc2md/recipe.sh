@@ -6,13 +6,13 @@
 # tap; nothing here escapes a dependency tree.
 
 UNFLAB_NAME=cc2md
-UNFLAB_VERSION=0.1.0
+UNFLAB_VERSION=0.1.1
 UNFLAB_VERSION_FLAG=--version
 UNFLAB_HOMEPAGE=https://github.com/magarcia/cc2md
 UNFLAB_LICENSE=MIT
-UNFLAB_SOURCE=https://github.com/magarcia/cc2md/archive/refs/tags/v0.1.0.tar.gz
+UNFLAB_SOURCE=https://github.com/magarcia/cc2md/archive/refs/tags/v0.1.1.tar.gz
 UNFLAB_CHECK=github:magarcia/cc2md
-UNFLAB_SHA256=c497b0326d0d17af1c1e02a8fc42063be28cde4619ef9935e7b87b5fdafc7438
+UNFLAB_SHA256=6a9b30855296599a4d5f92cbffef099175729c00d34fc58645be6b4f50c6ad36
 UNFLAB_ATTEST='none:GitHub auto-generated tag archive; upstream publishes no checksum for it'
 UNFLAB_TOOLCHAIN="go"
 UNFLAB_CLASS=3
