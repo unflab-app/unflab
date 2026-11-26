@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # refresh-keyrings.sh <out-dir> -- fetch every keyring a recipe's
-# UNFLAB_ATTEST names into <out-dir>/<host>/<path>, and say whether
-# that set should become the new `keyrings` artifact.
+# UNFLAB_ATTEST names into <out-dir>, at unflab_keyring_path of each
+# URL, and say whether that set should become the new `keyrings`
+# artifact.
 #
 # attest.sh falls back on the newest such artifact when an upstream's
 # keyring can't be fetched -- ftp.gnu.org going quiet would otherwise
@@ -41,7 +42,7 @@ urls="$(grep -h '^UNFLAB_ATTEST=' "$ROOT_DIR"/utils/*/recipe.sh |
         sed -n 's/^gnupg://p' | sort -u)"
 
 for url in $urls; do
-  path="${url#*://}"
+  path="$(unflab_keyring_path "$url")"
   mkdir -p "$out/$(dirname "$path")"
   if curl -fsSL --connect-timeout 15 --max-time 120 --retry 3 \
        -o "$out/$path" "$url"; then

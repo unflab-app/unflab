@@ -30,10 +30,20 @@
 # are wrong, a fetch failure means the network is. Only the first is a
 # security event.
 
+# unflab_keyring_path <url> -- where a keyring sits in the `keyrings`
+# artifact: the URL without its scheme, with the characters
+# upload-artifact refuses in a path (" : < > | * ?) made `_`. A keyring
+# served from a query string, like Savannah's memberlist-gpgkeys.php,
+# would otherwise fail the whole upload.
+unflab_keyring_path() {
+  printf '%s\n' "${1#*://}" | tr '":<>|*?' '_______'
+}
+
 # unflab_keyring_cache <dir> -- unpack the newest `keyrings` artifact,
-# which check-updates.yml uploads, into <dir> as <host>/<path> for each
-# keyring URL; print when it was made. Returns 1 if there is none to
-# be had: outside CI there is usually no GITHUB_REPOSITORY or token.
+# which check-updates.yml uploads, into <dir>, each keyring at
+# unflab_keyring_path of its URL; print when it was made. Returns 1 if
+# there is none to be had: outside CI there is usually no
+# GITHUB_REPOSITORY or token.
 unflab_keyring_cache() {
   local dir="$1" repo="${GITHUB_REPOSITORY:-}" art
   [ -n "$repo" ] && command -v gh >/dev/null 2>&1 || return 1
@@ -129,8 +139,8 @@ unflab_attest() {
              -o "$tmp/keyring" "$rest" 2>/dev/null; then
         local when
         if when="$(unflab_keyring_cache "$tmp/cache")" &&
-           [ -s "$tmp/cache/${rest#*://}" ]; then
-          cp "$tmp/cache/${rest#*://}" "$tmp/keyring"
+           [ -s "$tmp/cache/$(unflab_keyring_path "$rest")" ]; then
+          cp "$tmp/cache/$(unflab_keyring_path "$rest")" "$tmp/keyring"
           echo "attest: $rest unreachable; using the copy fetched $when"
         else
           echo "attest: could not fetch keyring $rest, and no cached copy" >&2
