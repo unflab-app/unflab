@@ -87,7 +87,7 @@ for f in "$@"; do
     #
     # templates/get.sh is the site's bootstrap: served from the site,
     # never staged into a package. The docs generator, prereqs, bump,
-    # check-updates and merge-green likewise touch no artefact --
+    # check-updates, pr and release-plan likewise touch no artefact --
     # verified with build-key.sh, which does not hash any of them.
     docs/*|\
     site-extra/*|\
@@ -96,7 +96,8 @@ for f in "$@"; do
     scripts/prereqs.sh|\
     scripts/bump.sh|\
     scripts/check-updates.sh|\
-    scripts/merge-green.sh|\
+    scripts/pr.sh|\
+    scripts/release-plan.sh|\
     scripts/refresh-keyrings.sh|\
     scripts/install-local.sh|\
     docmd.config.base.json|\

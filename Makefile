@@ -169,3 +169,27 @@ check-updates:
 clean:
 	@rm -rf $(ROOT)/build $(ROOT)/out $(ROOT)/dist
 	@echo "Removed build/, out/ and dist/"
+
+# --- Maintainer only ----------------------------------------------------
+#
+# Release engineering for the repo's owner: merging the nightly bump PRs
+# and cutting releases. Needs gh, authenticated with write access to the
+# repo. Deliberately not in `make list`. scripts/pr.sh says what each
+# does; `make pr-cycle` is the whole round, asking before each step.
+
+.PHONY: pr-cycle pr-list pr-merges pr-recheck-fails pr-check-updates pr-release
+
+pr-cycle:
+	@$(ROOT)/scripts/pr.sh cycle
+pr-list:
+	@$(ROOT)/scripts/pr.sh list
+pr-merges:
+	@$(ROOT)/scripts/pr.sh merge
+pr-recheck.%:
+	@$(ROOT)/scripts/pr.sh recheck $*
+pr-recheck-fails:
+	@$(ROOT)/scripts/pr.sh recheck-fails
+pr-check-updates:
+	@$(ROOT)/scripts/pr.sh check-updates
+pr-release:
+	@$(ROOT)/scripts/pr.sh release
