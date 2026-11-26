@@ -21,13 +21,13 @@
 # doesn't support.
 
 UNFLAB_NAME=ripgrep
-UNFLAB_VERSION=15.2.0
+UNFLAB_VERSION=16.0.0
 UNFLAB_VERSION_FLAG=--version
 UNFLAB_HOMEPAGE=https://github.com/BurntSushi/ripgrep
 UNFLAB_LICENSE="MIT OR UNLICENSE"
-UNFLAB_SOURCE=https://github.com/BurntSushi/ripgrep/archive/refs/tags/15.2.0.tar.gz
+UNFLAB_SOURCE=https://github.com/BurntSushi/ripgrep/archive/refs/tags/16.0.0.tar.gz
 UNFLAB_CHECK=github:BurntSushi/ripgrep
-UNFLAB_SHA256=7605249d3eb0d5f170e3414498e3344e26b1e7a147aec518b57090b80036a562
+UNFLAB_SHA256=17e7a1a0db80ed9618a0963c7ae4aecb8fce25c70cf7ebed514daf2b38a0d153
 UNFLAB_ATTEST='none:GitHub auto-generated tag archive; upstream publishes prebuilt binaries but no checksum for the source'
 UNFLAB_TOOLCHAIN="rust cargo"
 UNFLAB_CLASS=3
