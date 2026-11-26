@@ -288,10 +288,63 @@ cmd_check_updates() {
   say "Dispatched: Propose upstream bumps. New PRs appear in a few minutes."
 }
 
+# watch_release <run-id>: wait for a Release run; on a failure, offer to
+# re-run its failed jobs and wait again. Most failures are a macOS
+# runner that never turned up, and the publish job only runs once every
+# recipe has built, so a re-run finishes the same release against the
+# same tag rather than making another.
+watch_release() {
+  local id="$1" state
+  while :; do
+    while :; do
+      state="$(gh run view "$id" --json status,conclusion --jq '"\(.status) \(.conclusion)"')"
+      case "$state" in completed*) break ;; esac
+      status "Release run $id: ${state% *}  (Ctrl-C leaves it running)"
+      sleep "$POLL"
+    done
+    status_done
+    [ "$state" != "completed success" ] || return 0
+
+    warn "Release ${state#completed }: $(gh run view "$id" --json url --jq .url)"
+    gh run view "$id" --json jobs --jq '.jobs[]
+      | select(.conclusion | IN("failure", "cancelled", "timed_out"))
+      | "  \(.name): \(.conclusion)"' >&2
+    [ "$(ask "Re-run the failed jobs? [Y/n]" y)" = y ] || return 1
+    gh run rerun "$id" --failed
+    sleep 10
+  done
+}
+
+# A tag with no release behind it: the run that pushed it failed after
+# tagging. release-plan.sh counts from the newest tag, so without this
+# the next release would skip straight past it as "nothing to release".
+# Returns 1 if there was one and it still isn't released.
+finish_stranded() {
+  local tag sha id
+  tag="$(git tag -l 'v*' --sort=-v:refname | head -1)"
+  [ -n "$tag" ] || return 0
+  gh release view "$tag" >/dev/null 2>&1 && return 0
+
+  sha="$(git rev-list -n 1 "$tag")"
+  id="$(gh run list --workflow release.yml --limit 30 \
+          --json databaseId,headSha \
+          --jq "[.[] | select(.headSha == \"$sha\")][0].databaseId // empty")"
+  say ""
+  if [ -z "$id" ]; then
+    warn "$tag is tagged but not released, and no Release run for it was found."
+    return 1
+  fi
+  say "$tag is tagged but not released (run $id)."
+  watch_release "$id" || return 1
+  say "Released $tag: $(gh release view "$tag" --json url --jq .url)"
+}
+
 cmd_release() {
   local yes=0
   [ "${1:-}" = -y ] && yes=1
   git fetch -q --tags origin main
+
+  finish_stranded || return 1
 
   local prev bump next recipes shared
   eval "$(scripts/release-plan.sh origin/main)"
@@ -328,7 +381,7 @@ cmd_release() {
 
   # gh doesn't hand back the run it started; it's the newest dispatch
   # since we asked.
-  local id="" tries=0 state
+  local id="" tries=0
   while [ -z "$id" ]; do
     sleep 5
     id="$(gh run list --workflow release.yml --event workflow_dispatch \
@@ -337,20 +390,10 @@ cmd_release() {
     tries=$((tries + 1))
     [ -n "$id" ] || [ "$tries" -le 12 ] || die "can't find the Release run"
   done
-  while :; do
-    state="$(gh run view "$id" --json status,conclusion --jq '"\(.status) \(.conclusion)"')"
-    case "$state" in completed*) break ;; esac
-    status "Release run $id: ${state% *}  (Ctrl-C leaves it running)"
-    sleep "$POLL"
-  done
-  status_done
-  if [ "$state" = "completed success" ]; then
-    git fetch -q --tags origin
-    local tag; tag="$(git tag -l 'v*' --sort=-v:refname | head -1)"
-    say "Released $tag: $(gh release view "$tag" --json url --jq .url 2>/dev/null || echo "$tag")"
-  else
-    die "Release ${state#completed }: $(gh run view "$id" --json url --jq .url)"
-  fi
+  watch_release "$id" || exit 1
+  git fetch -q --tags origin
+  local tag; tag="$(git tag -l 'v*' --sort=-v:refname | head -1)"
+  say "Released $tag: $(gh release view "$tag" --json url --jq .url 2>/dev/null || echo "$tag")"
 }
 
 # --- the round -------------------------------------------------------------
