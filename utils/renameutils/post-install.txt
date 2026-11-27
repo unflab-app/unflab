@@ -1,6 +1,0 @@
-qmv and qcp need GNU ls to list files, and use gls when it's on your
-PATH. If you don't already have it:
-
-  unflab ls        # installs gls
-
-imv, icp and deurlname need nothing else.

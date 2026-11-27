@@ -29,34 +29,28 @@ deurlname *%20*
 ./install.sh --uninstall
 ```
 
-`qmv` and `qcp` need GNU `ls`; `unflab ls` installs it as `gls`.
-
 ## About this build
+
+This is the [unflab-app fork](https://github.com/unflab-app/renameutils)
+of renameutils, whose last upstream release was 0.12.0 in 2012. The fork
+exists so that renameutils works on macOS with nothing but the system:
+
+- `qmv` and `qcp` read directories themselves instead of running GNU
+  `ls`, ordering files the way GNU `ls` does for every listing option.
+- `imv` and `icp` pre-fill the old name using libedit, which macOS
+  provides, and work with macOS's own `mv` and `cp`.
+- UTF-8 names appear as themselves in the editor, case-only renames
+  work on macOS's case-insensitive file system, and `deurlname` never
+  replaces an existing file.
 
 Homebrew's renameutils depends on coreutils and GNU readline. This one
 links only `libedit` and `libSystem`, which macOS provides in
-`/usr/lib`. Getting there takes a small patch:
+`/usr/lib`. Line editing follows libedit's emacs bindings and reads
+`~/.editrc`.
 
-- `qmv` and `qcp` list files with `ls --quoting-style=c`, which macOS's
-  `ls` doesn't support. They use `gls` if it is on your `PATH`, and
-  plain `ls` otherwise, so a GNU `ls` installed under either name
-  works. `--ls=PROGRAM` still overrides it.
-- `imv` and `icp` use macOS's `mv` and `cp`. Their arguments are
-  reordered so that BSD `mv` and `cp`, which stop reading options at
-  the first file name, see them correctly.
-- `imv` and `icp` use libedit's own interface to pre-fill the prompt,
-  since its readline emulation discards the pre-filled text. Line
-  editing follows libedit's emacs bindings and reads `~/.editrc`.
-
-Upstream's man page for `imv` still says it uses GNU readline.
-
-Two things work differently from a GNU/readline build:
-
-- In `qmv`'s interactive mode (`qmv -i`, or when a rename conflicts),
-  Ctrl-C doesn't clear a half-typed command. Use Ctrl-U.
-- Options for `imv` and `icp` are passed straight to macOS's `mv` and
-  `cp`, so GNU-only ones like `--backup` aren't available.
+Options for `imv` and `icp` are passed straight to macOS's `mv` and
+`cp`, so GNU-only ones like `--backup` aren't available. Messages are in
+English: this build leaves out the translations.
 
 Upstream's `qcmd` and `icmd`, which only work when told which command to
-be, aren't installed. renameutils has had no release since 0.12.0 in
-2012.
+be, aren't installed.
